@@ -201,10 +201,19 @@ public class WebSocket extends EventDispatcher {
     }
     if (closeConnection) {
       logger.log("closed");
-      var fireErrorEvent:Boolean = readyState != CONNECTING && code == STATUS_CONNECTION_ERROR;
+      
+      // This was:
+      //var fireErrorEvent:Boolean = readyState != CONNECTING && code == STATUS_CONNECTION_ERROR;
+      
+      // but now is
+      var fireErrorEvent:Boolean = false;
+      // Because when our socket server shuts down, and IOErrorEvent fires, and no close event is ever dispatched to the JS.
+      // This change allows us to recognize the disconnect and recover gracefully
+      
       readyState = CLOSED;
       if (fireErrorEvent) {
         dispatchEvent(new WebSocketEvent("error"));
+        dispatchCloseEvent(false, STATUS_CLOSED_ABNORMALLY, reason);
       } else {
         var wasClean:Boolean = code != STATUS_CLOSED_ABNORMALLY && code != STATUS_CONNECTION_ERROR;
         var eventCode:int = code == STATUS_CONNECTION_ERROR ? STATUS_CLOSED_ABNORMALLY : code;
