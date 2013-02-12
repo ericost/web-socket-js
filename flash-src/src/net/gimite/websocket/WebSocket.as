@@ -213,7 +213,6 @@ public class WebSocket extends EventDispatcher {
       readyState = CLOSED;
       if (fireErrorEvent) {
         dispatchEvent(new WebSocketEvent("error"));
-        dispatchCloseEvent(false, STATUS_CLOSED_ABNORMALLY, reason);
       } else {
         var wasClean:Boolean = code != STATUS_CLOSED_ABNORMALLY && code != STATUS_CONNECTION_ERROR;
         var eventCode:int = code == STATUS_CONNECTION_ERROR ? STATUS_CLOSED_ABNORMALLY : code;
